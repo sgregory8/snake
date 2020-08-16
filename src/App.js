@@ -5,7 +5,7 @@ import Score from "./Score";
 
 class App extends Component {
   state = {
-    gameOver: false,
+    gameOver: true,
     direction: null,
     snakeSegments: [[48, 48], [44, 48], [40, 48]],
     nextSegment: null,
@@ -20,7 +20,7 @@ class App extends Component {
   }
 
   componentDidUpdate() {
-    if (this.state.foodCoords === null) {
+    if (this.state.foodCoords === null && !this.state.gameOver) {
       const foodCoords = this.generateRandomCoords();
       this.setState({
         foodCoords: foodCoords
@@ -33,9 +33,14 @@ class App extends Component {
 
   onKeyDown = e => {
     e = e || window.event;
+    if (this.state.gameOver) {
+      this.setState({
+        gameOver: false
+      })
+    }
     switch (e.keyCode) {
       case 38:
-      console.log('up')
+        console.log("up");
         this.setState({ direction: "UP" });
         break;
       case 40:
@@ -51,7 +56,7 @@ class App extends Component {
   };
 
   moveSnake = () => {
-    if (this.state.direction != null) {
+    if (this.state.direction != null && !this.state.gameOver) {
       const spacingUnit = 4;
       const direction = this.state.direction;
       const snake = this.state.snakeSegments.slice();
@@ -157,7 +162,7 @@ class App extends Component {
 
   resetState = () => {
     this.setState({
-      gameOver: false,
+      gameOver: true,
       direction: null,
       snakeSegments: [[48, 48], [44, 48], [40, 48]],
       foodCoords: null,
@@ -167,7 +172,7 @@ class App extends Component {
 
   render() {
     let food;
-    if (this.state.foodCoords) {
+    if (this.state.foodCoords != null) {
       food = <Food food={this.state.foodCoords} />;
     }
 
