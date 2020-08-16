@@ -1,13 +1,13 @@
 import React, { Component } from "react";
 import SnakeBody from "./SnakeBody";
 import Food from "./Food";
-import Score from "./Food";
+import Score from "./Score";
 
 class App extends Component {
   state = {
     gameOver: false,
-    direction: "RIGHT",
-    snakeSegments: [[48, 48], [48, 44], [48, 40]],
+    direction: null,
+    snakeSegments: [[48, 48], [44, 48], [40, 48]],
     nextSegment: null,
     foodCoords: null,
     segmentsToAdd: [],
@@ -15,8 +15,8 @@ class App extends Component {
   };
 
   componentDidMount() {
-    setInterval(this.moveSnake, 200);
     document.onkeydown = this.onKeyDown;
+    setInterval(this.moveSnake, 50);
   }
 
   componentDidUpdate() {
@@ -35,6 +35,7 @@ class App extends Component {
     e = e || window.event;
     switch (e.keyCode) {
       case 38:
+      console.log('up')
         this.setState({ direction: "UP" });
         break;
       case 40:
@@ -50,36 +51,38 @@ class App extends Component {
   };
 
   moveSnake = () => {
-    const spacingUnit = 4;
-    const direction = this.state.direction;
-    const snake = this.state.snakeSegments.slice();
-    const head = [...this.state.snakeSegments[0]];
-    var newHead = head;
-    var newSnake = [];
-    switch (direction) {
-      case "UP":
-        newHead[1] = head[1] - spacingUnit;
-        break;
-      case "DOWN":
-        newHead[1] = head[1] + spacingUnit;
-        break;
-      case "LEFT":
-        newHead[0] = head[0] - spacingUnit;
-        break;
-      case "RIGHT":
-        newHead[0] = head[0] + spacingUnit;
-        break;
+    if (this.state.direction != null) {
+      const spacingUnit = 4;
+      const direction = this.state.direction;
+      const snake = this.state.snakeSegments.slice();
+      const head = [...this.state.snakeSegments[0]];
+      var newHead = head;
+      var newSnake = [];
+      switch (direction) {
+        case "UP":
+          newHead[1] = head[1] - spacingUnit;
+          break;
+        case "DOWN":
+          newHead[1] = head[1] + spacingUnit;
+          break;
+        case "LEFT":
+          newHead[0] = head[0] - spacingUnit;
+          break;
+        case "RIGHT":
+          newHead[0] = head[0] + spacingUnit;
+          break;
+      }
+      newSnake[0] = newHead;
+      snake.forEach((segment, i) => {
+        newSnake[i + 1] = segment;
+      });
+      newSnake.pop();
+      this.setState({
+        snakeSegments: newSnake
+      });
+      this.checkSnakeCollision();
+      this.addSegmentIfNeeded();
     }
-    newSnake[0] = newHead;
-    snake.forEach((segment, i) => {
-      newSnake[i + 1] = segment;
-    });
-    newSnake.pop();
-    this.setState({
-      snakeSegments: newSnake
-    });
-    this.checkSnakeCollision();
-    this.addSegmentIfNeeded();
   };
 
   checkNotInBounds = snakeCoords => {
@@ -100,7 +103,8 @@ class App extends Component {
       this.state.snakeSegments[0][1] === this.state.foodCoords[1]
     ) {
       this.setState({
-        foodCoords: null
+        foodCoords: null,
+        score: this.state.score + 1
       });
       return [this.state.snakeSegments[0][0], this.state.snakeSegments[0][1]];
     }
@@ -146,7 +150,7 @@ class App extends Component {
     snake.shift();
     snake.forEach(segment => {
       if (segment[0] === snakeHead[0] && segment[1] === snakeHead[1]) {
-        this.resetState()
+        this.resetState();
       }
     });
   };
@@ -154,9 +158,10 @@ class App extends Component {
   resetState = () => {
     this.setState({
       gameOver: false,
-      direction: "RIGHT",
+      direction: null,
       snakeSegments: [[48, 48], [44, 48], [40, 48]],
-      foodCoords: null
+      foodCoords: null,
+      score: 0
     });
   };
 
@@ -170,6 +175,7 @@ class App extends Component {
       <div className="game-grid">
         <SnakeBody snakeSegments={this.state.snakeSegments}></SnakeBody>
         {food}
+        <Score score={this.state.score}></Score>
       </div>
     );
   }

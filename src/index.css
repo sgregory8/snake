@@ -13,6 +13,12 @@
   background-color: red;
 }
 
+.score {
+  position: absolute;
+  width: 4%;
+  height: 4%;
+}
+
 .food-piece {
   position: absolute;
   width: 4%;

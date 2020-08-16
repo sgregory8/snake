@@ -10,6 +10,6 @@ export default props => {
         };
         return <div className="snake-segment" key={i} style={style}></div>;
       })}
-    </div>
+   </div>
   );
 };
