@@ -154,7 +154,7 @@ class App extends Component {
     const snake = [...this.state.snakeSegments];
     snake.shift();
     snake.forEach(segment => {
-      if (segment[0] === snakeHead[0] && segment[1] === snakeHead[1]) {
+      if (segment[0] == snakeHead[0] && segment[1] == snakeHead[1]) {
         this.resetState();
       }
     });
